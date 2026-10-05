@@ -6,7 +6,7 @@
 Historical and archival dates are often uncertain (`1850?`), approximate (`1850~`), partial
 (`185X`), ranges (`1850/1860`) or open-ended (`../1850`). EDTF can express all of them, but a string
 can't be filtered or sorted. `AshEdtf.Type` parses the string on cast and stores it with its derived
-lower and upper bound in one Postgres composite column, so the two can never drift apart:
+lower and upper bound in one Postgres composite column:
 
 ```elixir
 attribute :date, AshEdtf.Type
@@ -23,8 +23,8 @@ record.date
 
 ## Features
 
-- **Lossless bounds.** Bounds are `Date`s in Elixir and day numbers in Postgres, so any EDTF year
-  works, including `Y-170000000`; there is no 4713 BC limit.
+- **Any year.** Bounds are `Date`s in Elixir and day numbers in Postgres, so every EDTF year
+  works, including BCE and long years like `Y-170000000`.
 - **Open vs. unknown.** Each side records whether it is `:closed`, `:open` (`1850/..`) or
   `:unknown` (`1850/`).
 - **Typed queries** on the bounds: `date[:lower] >= ^~D[1850-01-01]`, sorting, aggregates.

@@ -3,9 +3,9 @@ defmodule AshEdtf.Day do
   A calendar day without a range limit: a `Date` in Elixir, stored as its
   day number (`Date.to_gregorian_days/1`) in a `bigint`.
 
-  Used for the `lower` / `upper` members of the `edtf` composite. Postgres
-  `date` stops at 4713 BC, while EDTF allows years like `Y-170000000`; day
-  numbers keep their order, so comparisons stay exact for any year.
+  Used for the `lower` / `upper` members of the `edtf` composite. Day numbers
+  keep their order, so comparisons are exact for any year, including long
+  years like `Y-170000000`.
 
   Expressions take `Date`s and dump them to day numbers:
 

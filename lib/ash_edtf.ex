@@ -3,8 +3,7 @@ defmodule AshEdtf do
   EDTF (Extended Date/Time Format, ISO 8601-2) dates for Ash.
 
   An `AshEdtf.Type` attribute stores the EDTF string together with the date
-  range it covers, derived on cast with the `edtf` library, so the string and
-  its bounds can't drift apart:
+  range it covers, derived on cast with the `edtf` library:
 
   ```elixir
   attribute :date, AshEdtf.Type
@@ -30,7 +29,7 @@ defmodule AshEdtf do
     "Working with bounds".
   - `AshEdtf.Value` — the cast value.
   - `AshEdtf.Day` — a bound: a `Date` in Elixir, a day number in Postgres
-    (no 4713 BC limit).
+    (any year).
   - `AshEdtf.AshPostgresExtension` — the Postgres type and SQL helpers.
   - `AshEdtf.Expressions.Overlaps`, `AshEdtf.Expressions.Day`,
     `AshEdtf.Expressions.Year`, `AshEdtf.Expressions.Month`,

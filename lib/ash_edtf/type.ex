@@ -5,8 +5,7 @@ defmodule AshEdtf.Type do
 
   Input is an EDTF string. Casting trims it, validates it with `EDTF.parse/1`
   and derives the covered range with `EDTF.to_date_range/1`, producing an
-  `AshEdtf.Value`. The string and its bounds are written as one value, so they
-  can never drift apart. Blank input (`nil` or whitespace-only) casts to `nil`.
+  `AshEdtf.Value`. Blank input (`nil` or whitespace-only) casts to `nil`.
 
   ```elixir
   attribute :date, AshEdtf.Type
@@ -71,15 +70,15 @@ defmodule AshEdtf.Type do
 
   ## Limits
 
-  None in practice: bounds are stored as day numbers (`AshEdtf.Day`), so
-  long years like `Y-170000000` round-trip exactly. Only day numbers beyond
-  a Postgres `bigint` (years around ±25 quadrillion) are rejected.
+  Bounds are stored as day numbers (`AshEdtf.Day`), so every year works,
+  including long years like `Y-170000000`. Only day numbers beyond a Postgres
+  `bigint` (years around ±25 quadrillion) are rejected.
 
   ## Working with bounds
 
   In Elixir, `lower` and `upper` are plain `Date`s. In Postgres they are
-  `bigint` day numbers (`Date.to_gregorian_days/1`), because Postgres `date`
-  stops at 4713 BC. Inside Ash this is mostly invisible: comparisons with
+  `bigint` day numbers (`Date.to_gregorian_days/1`), so they cover any year.
+  Inside Ash this is mostly invisible: comparisons with
   `Date` parameters, sorts, `min`/`max` and `edtf_overlaps/3` just work. It
   shows where a bound meets SQL date handling:
 

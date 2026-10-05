@@ -18,7 +18,23 @@ defmodule AshEdtf.MixProject do
       description: @description,
       package: package(),
       docs: docs(),
-      source_url: @source_url
+      source_url: @source_url,
+      usage_rules: usage_rules()
+    ]
+  end
+
+  # `mix usage_rules.sync` writes the rules of the libraries this package
+  # builds on into AGENTS.md, for contributors and coding agents.
+  defp usage_rules do
+    [
+      file: "AGENTS.md",
+      usage_rules: [
+        :elixir,
+        :otp,
+        {:ash, link: :markdown},
+        {:ash_postgres, link: :markdown},
+        {:igniter, link: :markdown}
+      ]
     ]
   end
 
@@ -29,7 +45,7 @@ defmodule AshEdtf.MixProject do
     [
       licenses: ["MIT"],
       links: %{"GitHub" => @source_url},
-      files: ~w(lib .formatter.exs mix.exs README.md LICENSE CHANGELOG.md)
+      files: ~w(lib .formatter.exs mix.exs README.md LICENSE CHANGELOG.md usage-rules.md usage-rules)
     ]
   end
 
@@ -69,6 +85,7 @@ defmodule AshEdtf.MixProject do
       # Dev / test
       {:lazy_html, ">= 0.1.0", only: :test},
       {:ex_doc, "~> 0.40", only: :dev, runtime: false},
+      {:usage_rules, "~> 1.1", only: :dev, runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
