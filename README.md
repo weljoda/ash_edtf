@@ -35,6 +35,20 @@ record.date
 
 ## Installation
 
+With [Igniter](https://hexdocs.pm/igniter):
+
+```sh
+mix igniter.install ash_edtf
+```
+
+The installer registers the `:edtf` type short name and the Ash expressions, recompiles `ash` (both
+settings are compile-time config), and, if you use AshPostgres, adds the Postgres extension to your
+repos and generates its migration. If you add AshPostgres later, run
+`mix ash_edtf.add_to_ash_postgres`. For your test build, run `MIX_ENV=test mix deps.compile ash --force`
+once.
+
+### Manual installation
+
 ```elixir
 def deps do
   [
@@ -59,25 +73,27 @@ end
 mix ash.codegen add_ash_edtf
 ```
 
-Register the Ash expressions (compile-time config of `ash`):
+Register the type short name and the Ash expressions:
 
 ```elixir
-config :ash, :custom_expressions, [
-  AshEdtf.Expressions.Overlaps,
-  AshEdtf.Expressions.Day,
-  AshEdtf.Expressions.Year,
-  AshEdtf.Expressions.Month,
-  AshEdtf.Expressions.Decade
-]
+config :ash,
+  custom_types: [edtf: AshEdtf.Type],
+  custom_expressions: [
+    AshEdtf.Expressions.Overlaps,
+    AshEdtf.Expressions.Day,
+    AshEdtf.Expressions.Year,
+    AshEdtf.Expressions.Month,
+    AshEdtf.Expressions.Decade
+  ]
 ```
 
-After changing that list, recompile Ash with `mix deps.compile ash --force`.
+Both are compile-time config of `ash`, so recompile it afterwards with `mix deps.compile ash --force`.
 
 ## Usage
 
 ```elixir
 attributes do
-  attribute :date, AshEdtf.Type, allow_nil?: false, public?: true
+  attribute :date, :edtf, allow_nil?: false, public?: true
 end
 
 calculations do
