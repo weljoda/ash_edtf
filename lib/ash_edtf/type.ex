@@ -3,113 +3,49 @@ defmodule AshEdtf.Type do
   Ash type for an EDTF (Extended Date/Time Format) date, stored together with
   the date range it covers.
 
-  Input is an EDTF string. Casting trims it, validates it with `EDTF.parse/1`
-  and derives the covered range with `EDTF.to_date_range/1`, producing an
-  `AshEdtf.Value`. Blank input (`nil` or whitespace-only) casts to `nil`.
-
   ```elixir
-  attribute :date, AshEdtf.Type
+  attribute :date, AshEdtf.Type      # or :edtf when registered as a custom type
   ```
 
-  ## Data layers
-
-  - **AshPostgres** — the only supported persistent data layer. Requires
-    `AshEdtf.AshPostgresExtension` in the repo's `installed_extensions/0`.
-  - **Ets / Simple** — supported; the struct is kept in memory and
-    `edtf_overlaps/3` is evaluated in Elixir.
-  - **Other SQL data layers (e.g. AshSqlite)** — not supported. They have no
-    composite type, and storing the value as JSON would make the bounds
-    strings, which don't compare correctly for BCE dates.
+  Input is an EDTF string. Casting trims it, parses it with `EDTF.parse/1` and
+  derives the covered range with `EDTF.to_date_range/1`, producing an
+  `AshEdtf.Value`. Blank input (`nil` or whitespace-only) casts to `nil`;
+  invalid input is an error ("is not a valid EDTF date").
 
   ## Storage
 
-  With AshPostgres the value is stored in the `edtf` composite type installed
-  by `AshEdtf.AshPostgresExtension`:
+  With AshPostgres the value is one column of the `edtf` composite type
+  installed by `AshEdtf.AshPostgresExtension`. Its fields are addressable in
+  expressions:
 
-  ```sql
-  edtf AS (value text, lower bigint, upper bigint,
-           lower_bound edtf_bound, upper_bound edtf_bound)
-  ```
-
-  Each member is addressable in expressions:
+  | Field | Type |
+  |---|---|
+  | `:value` | `:string` — the EDTF string |
+  | `:lower`, `:upper` | `AshEdtf.Day` — first / last day covered, `nil` unless the side is `:closed` |
+  | `:lower_bound`, `:upper_bound` | `AshEdtf.Bound` — `:closed`, `:open`, `:unknown` |
 
   ```elixir
   filter expr(date[:lower] >= ^~D[1850-01-01])
-  sort expr(date[:lower])
-  filter expr(date[:upper_bound] != :unknown)
+  filter expr(edtf_overlaps(date, ^from, ^to))
   ```
 
-  Sort by `date[:lower]` rather than by the attribute itself: comparing the
-  composite compares the EDTF strings first.
+  Bounds are `Date`s in Elixir and day numbers in Postgres, so every year
+  works. Only day numbers beyond a Postgres `bigint` (years around
+  ±25 quadrillion) are rejected.
 
-  ## Bounds
+  ## Data layers
 
-  A side whose bound is `:open` or `:unknown` has a `nil` date. `nil` makes
-  plain comparisons like `date[:lower] <= ^to` drop the row, so period queries
-  should use the `edtf_overlaps/3` expression (`AshEdtf.Expressions.Overlaps`),
-  which treats both as unbounded. Add a filter on `date[:lower_bound]` /
-  `date[:upper_bound]` to exclude unknown bounds when that is wanted.
+  AshPostgres is the supported persistent data layer. With `Ash.DataLayer.Ets`
+  and `Ash.DataLayer.Simple` values are kept as structs and the AshEdtf
+  expressions are evaluated in Elixir. Data layers without composite types
+  (e.g. AshSqlite) are not supported.
 
-  ## Indexing
+  ## Guides
 
-  Overlap queries go through the immutable `edtf_range(edtf)` SQL function, so
-  they can use an optional GiST expression index. Add one only when a table
-  is large enough for period searches to need it:
-
-  ```elixir
-  postgres do
-    custom_indexes do
-      index ["edtf_range(date)"], using: "GIST"
-    end
-  end
-  ```
-
-  The planner only uses the index when the query contains the same
-  expression, which `edtf_overlaps/3` guarantees. Hand-written fragments
-  like `int8range((date).lower, ...)` will not match it.
-
-  ## Limits
-
-  Bounds are stored as day numbers (`AshEdtf.Day`), so every year works,
-  including long years like `Y-170000000`. Only day numbers beyond a Postgres
-  `bigint` (years around ±25 quadrillion) are rejected.
-
-  ## Working with bounds
-
-  In Elixir, `lower` and `upper` are plain `Date`s. In Postgres they are
-  `bigint` day numbers (`Date.to_gregorian_days/1`), so they cover any year.
-  Inside Ash this is mostly invisible: comparisons with
-  `Date` parameters, sorts, `min`/`max` and `edtf_overlaps/3` just work. It
-  shows where a bound meets SQL date handling:
-
-  | Need | Use |
-  |---|---|
-  | Compare with a date column or `today()` | `date[:lower] <= edtf_day(published_on)` |
-  | Year / month / decade, e.g. for grouping | `edtf_year/1`, `edtf_month/1`, `edtf_decade/1` |
-  | Calculation or aggregate over a bound | declare the type as `AshEdtf.Day`, not `:date` |
-  | Raw SQL | `edtf_day_to_date(bigint)` (within the `date` range), `edtf_day_year`, `edtf_day_month`, `edtf_day_decade`, `edtf_date_to_day(date)` |
-
-  ```elixir
-  calculate :earliest_date, AshEdtf.Day, expr(min(dates, expr: date[:lower], expr_type: AshEdtf.Day))
-  calculate :decade, :integer, expr(edtf_decade(date[:lower]))
-  ```
-
-  Mixing a bound with a real `date` in SQL without converting fails loudly
-  (`cannot cast type date to bigint`), never with a wrong result. Prefer
-  converting the date side (`edtf_day/1`) over the bound side, so indexes on
-  the bound stay usable.
-
-  The expressions must be registered:
-
-  ```elixir
-  config :ash, :custom_expressions, [
-    AshEdtf.Expressions.Overlaps,
-    AshEdtf.Expressions.Day,
-    AshEdtf.Expressions.Year,
-    AshEdtf.Expressions.Month,
-    AshEdtf.Expressions.Decade
-  ]
-  ```
+  - [EDTF values](edtf-values.md) — what each input stores, bounds, rejected input
+  - [Querying](querying.md) — period search, comparisons, sorting, calendar parts, aggregates
+  - [Postgres](postgres.md) — installed objects, indexing, raw SQL
+  - [Forms](forms.md)
   """
   use Ash.Type
 

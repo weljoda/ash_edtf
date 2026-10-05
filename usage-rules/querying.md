@@ -72,7 +72,8 @@ aggregate a bound with an inline `min(..., expr: ...)` calculation as above.
 
 ## Sorting and identities
 
-- Sort by `date[:lower]` (or `date[:upper]`), not by the attribute — the
-  composite sorts by its EDTF string first.
+- Sort with `Ash.Sort.expr_sort(date[:lower], AshEdtf.Day)` (requires
+  `require Ash.Sort`), or by a calculation returning `date[:lower]`. Sorting
+  by the attribute, or with `sort(date: [:lower])`, orders by the EDTF string.
 - Identities and upserts may include an `AshEdtf.Type` attribute, e.g.
   `identity :unique_date, [:event_id, :date]`; equality is by EDTF string.

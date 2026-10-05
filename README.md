@@ -112,8 +112,15 @@ Ash.Query.filter(MyApp.Event, date[:upper_bound] != :unknown)
 calculate :earliest, AshEdtf.Day, expr(min(events, expr: date[:lower], expr_type: AshEdtf.Day))
 ```
 
-Query the bounds, never the EDTF string. See `AshEdtf.Type` ("Working with bounds", "Indexing")
-for the details, including raw-SQL helpers like `edtf_day_year(bigint)`.
+Query the bounds, never the EDTF string.
+
+## Guides
+
+- [Getting started](documentation/tutorials/getting-started-with-ash-edtf.md)
+- [EDTF values](documentation/topics/edtf-values.md) — what each input stores
+- [Querying](documentation/topics/querying.md) — period search, comparisons, sorting, calendar parts
+- [Postgres](documentation/topics/postgres.md) — installed objects, indexing, raw SQL
+- [Forms](documentation/topics/forms.md)
 
 ## Data layers
 

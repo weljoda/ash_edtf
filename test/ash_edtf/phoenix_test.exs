@@ -18,6 +18,11 @@ defmodule AshEdtf.PhoenixTest do
       assert AshEdtf.Phoenix.humanize(" 1999-06-10 ") == "June 10, 1999"
     end
 
+    test "reads decades and open intervals" do
+      assert AshEdtf.Phoenix.humanize("190") == "1900s"
+      assert AshEdtf.Phoenix.humanize("1850/..") == "from 1850"
+    end
+
     test "returns nil for blank, invalid and non-string values" do
       assert AshEdtf.Phoenix.humanize("  ") == nil
       assert AshEdtf.Phoenix.humanize("not a date") == nil

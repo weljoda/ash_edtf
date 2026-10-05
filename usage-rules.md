@@ -48,7 +48,7 @@ Query the bounds, **never the EDTF string**.
 filter expr(date[:lower] >= ^~D[1850-01-01])
 filter expr(edtf_overlaps(date, ^from, ^to))     # period search; nil from/to = open
 filter expr(date[:upper_bound] != :unknown)      # exclude unknown ends
-sort expr(date[:lower])                          # not `sort :date`
+Ash.Query.sort(query, Ash.Sort.expr_sort(date[:lower], AshEdtf.Day))  # not `sort(:date)`
 ```
 
 - A plain comparison drops rows whose side is `nil` (open/unknown). For "does

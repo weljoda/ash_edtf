@@ -46,4 +46,51 @@ defmodule AshEdtf.PostgresTest do
 
     assert dates_matching(document, expr(edtf_overlaps(date, nil, ^~D[1700-01-01]))) == ["../1800"]
   end
+
+  describe "sorting" do
+    setup %{document: document} do
+      for date <- ["1900", "Y-170000000", "1850"], do: add_date!(document, date)
+      :ok
+    end
+
+    defp sorted(document, sort) do
+      DocumentDate
+      |> Ash.Query.filter(document_id == ^document.id)
+      |> Ash.Query.sort(sort)
+      |> Ash.read!()
+      |> Enum.map(&to_string(&1.date))
+    end
+
+    test "expr_sort on a bound orders by date", %{document: document} do
+      require Ash.Sort
+
+      assert sorted(document, Ash.Sort.expr_sort(date[:lower], AshEdtf.Day)) == ["Y-170000000", "1850", "1900"]
+
+      assert sorted(document, [{Ash.Sort.expr_sort(date[:lower], AshEdtf.Day), :desc}]) ==
+               ["1900", "1850", "Y-170000000"]
+    end
+
+    test "a bound calculation orders by date", %{document: document} do
+      assert sorted(document, start_date: :asc) == ["Y-170000000", "1850", "1900"]
+    end
+
+    test "sorting by the attribute orders by the EDTF string", %{document: document} do
+      assert sorted(document, :date) == ["1850", "1900", "Y-170000000"]
+      assert sorted(document, date: [:lower]) == ["1850", "1900", "Y-170000000"]
+    end
+  end
+
+  test "the raw SQL example from the Postgres guide", %{document: document} do
+    add_date!(document, "1855")
+    add_date!(document, "1870")
+
+    %{rows: rows} =
+      Repo.query!("""
+      SELECT (date).value, edtf_day_year((date).lower), edtf_day_to_date((date).upper)
+      FROM document_dates
+      WHERE edtf_range(date) && int8range(edtf_date_to_day('1850-01-01'), edtf_date_to_day('1859-12-31'), '[]')
+      """)
+
+    assert rows == [["1855", 1855, ~D[1855-12-31]]]
+  end
 end

@@ -13,7 +13,8 @@ defmodule AshEdtf.Expressions.Overlaps do
 
   In Postgres this renders as `edtf_range(edtf) && int8range(from, to, '[]')`
   over day numbers,
-  so it can use the optional GiST index described in `AshEdtf.Type`.
+  so it can use the optional GiST index described in the
+  [Postgres guide](postgres.md).
 
   Register it in config:
 

@@ -35,6 +35,10 @@ defmodule AshEdtf.Test.DocumentDate do
     belongs_to :document, AshEdtf.Test.Document, allow_nil?: false, public?: true
   end
 
+  calculations do
+    calculate :start_date, AshEdtf.Day, expr(date[:lower])
+  end
+
   identities do
     identity :unique_date, [:document_id, :date]
   end

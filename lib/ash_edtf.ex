@@ -23,10 +23,11 @@ defmodule AshEdtf do
   calculate :decade, :integer, expr(edtf_decade(date[:lower]))
   ```
 
+  Start with the [getting started guide](getting-started-with-ash-edtf.md).
+
   ## Modules
 
-  - `AshEdtf.Type` — the attribute type; storage, bounds, indexing and
-    "Working with bounds".
+  - `AshEdtf.Type` — the attribute type.
   - `AshEdtf.Value` — the cast value.
   - `AshEdtf.Day` — a bound: a `Date` in Elixir, a day number in Postgres
     (any year).
