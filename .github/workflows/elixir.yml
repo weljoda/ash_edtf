@@ -10,6 +10,14 @@ on:
 jobs:
   ash-ci:
     uses: ash-project/ash/.github/workflows/ash-ci.yml@main
+    # The ceiling for the shared workflow's jobs: the release jobs (on a tag)
+    # and the dependency report need contents, credo uploads code-scanning
+    # results, the docs deploy needs pages and id-token.
+    permissions:
+      contents: write
+      security-events: write
+      pages: write
+      id-token: write
     with:
       postgres: true
       postgres-version: "17"
@@ -23,6 +31,8 @@ jobs:
   floor-deps:
     name: Tests on the lowest supported deps
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     env:
       MIX_ENV: test
       FLOOR_DEPS: "true"
