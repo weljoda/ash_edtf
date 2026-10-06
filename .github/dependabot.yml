@@ -1,0 +1,23 @@
+# Keeps mix.lock (the versions CI tests against) and the GitHub Actions up to
+# date, in one grouped PR each, as in the Ash repos. The ranges in mix.exs
+# and mix.floor.lock are maintained by hand.
+version: 2
+updates:
+  - package-ecosystem: mix
+    directory: /
+    schedule:
+      interval: monthly
+    versioning-strategy: lockfile-only
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      github-actions:
+        applies-to: version-updates
+        patterns:
+          - "*"

@@ -1,0 +1,49 @@
+name: CI
+on:
+  push:
+    tags:
+      - "v*"
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_call:
+jobs:
+  ash-ci:
+    uses: ash-project/ash/.github/workflows/ash-ci.yml@main
+    with:
+      postgres: true
+      postgres-version: "17"
+      tenants: false
+      spark-formatter: false
+      spark-cheat-sheets: false
+    secrets:
+      HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
+  # The lowest versions mix.exs allows, pinned in mix.floor.lock.
+  floor-deps:
+    name: Tests on the lowest supported deps
+    runs-on: ubuntu-latest
+    env:
+      MIX_ENV: test
+      FLOOR_DEPS: "true"
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: erlef/setup-beam@v1.24.1
+        with:
+          elixir-version: "1.18"
+          otp-version: "27"
+      - run: mix deps.get
+      - run: git diff --exit-code mix.floor.lock
+      - run: mix test

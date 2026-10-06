@@ -14,7 +14,11 @@ defmodule AshEdtf.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       consolidate_protocols: Mix.env() != :test,
       deps: deps(),
+      # CI also runs the suite against the lowest supported versions, pinned in
+      # mix.floor.lock (`FLOOR_DEPS=true mix test`).
+      lockfile: if(System.get_env("FLOOR_DEPS"), do: "mix.floor.lock", else: "mix.lock"),
       aliases: aliases(),
+      dialyzer: [plt_add_apps: [:mix, :ex_unit]],
       description: @description,
       package: package(),
       docs: docs(),
@@ -80,7 +84,9 @@ defmodule AshEdtf.MixProject do
 
   defp aliases do
     [
-      test: ["ash.setup --quiet", "test"]
+      test: ["ash.setup --quiet", "test"],
+      credo: "credo --strict",
+      sobelow: "sobelow --skip"
     ]
   end
 
@@ -94,10 +100,10 @@ defmodule AshEdtf.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ash, "~> 3.32"},
+      {:ash, "~> 3.5 and >= 3.5.41"},
       {:edtf, "~> 2.0"},
       # Optional integrations: compiled in only when the consuming app has them.
-      {:ash_postgres, "~> 2.13", optional: true},
+      {:ash_postgres, "~> 2.5 and >= 2.5.6", optional: true},
       {:phoenix_live_view, "~> 1.0", optional: true},
       {:phoenix_html, "~> 4.0", optional: true},
       {:jason, "~> 1.4", optional: true},
@@ -107,7 +113,10 @@ defmodule AshEdtf.MixProject do
       {:lazy_html, ">= 0.1.0", only: :test},
       {:ex_doc, "~> 0.40", only: :dev, runtime: false},
       {:usage_rules, "~> 1.1", only: :dev, runtime: false},
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:sobelow, ">= 0.0.0", only: [:dev, :test], runtime: false},
+      {:mix_audit, ">= 0.0.0", only: [:dev, :test], runtime: false}
     ]
   end
 end

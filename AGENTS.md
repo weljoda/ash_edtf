@@ -15,6 +15,12 @@ bounds in a Postgres composite. Start with the moduledocs of `AshEdtf` and
 - `config :ash, :custom_types` / `:custom_expressions` are compile-time
   config of `ash`. After changing them, run `mix deps.compile ash --force`
   (also with `MIX_ENV=test`).
+- The ranges in `mix.exs` start at the lowest versions the suite passes on;
+  `mix.floor.lock` pins those and CI tests them (`FLOOR_DEPS=true mix test`,
+  Elixir 1.18 / OTP 27). Dependabot only updates `mix.lock`. To raise a
+  floor: set the dep to `"== x.y.z"` in `mix.exs`, run
+  `FLOOR_DEPS=true mix deps.update <dep>`, restore the range with the new
+  minimum. A new dep needs the same, or CI fails on the changed floor lock.
 - Optional dependencies (`ash_postgres`, `phoenix_live_view`, `igniter`) must
   stay optional: guard modules that need them with `Code.ensure_loaded?/1`.
 - `usage-rules.md` and `usage-rules/*.md` ship to users and their agents.
