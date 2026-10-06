@@ -139,4 +139,4 @@ mix test
 
 ## License
 
-MIT, see [LICENSE](LICENSE).
+MIT, see [LICENSES/MIT.txt](LICENSES/MIT.txt).

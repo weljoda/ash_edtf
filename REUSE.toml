@@ -1,0 +1,10 @@
+# Licensing for the whole repository (https://reuse.software): every file is
+# MIT, so one annotation replaces per-file SPDX headers.
+version = 1
+SPDX-PackageName = "ash_edtf"
+SPDX-PackageDownloadLocation = "https://github.com/weljoda/ash_edtf"
+
+[[annotations]]
+path = "**"
+SPDX-FileCopyrightText = "2026 ash_edtf contributors <https://github.com/weljoda/ash_edtf/graphs/contributors>"
+SPDX-License-Identifier = "MIT"

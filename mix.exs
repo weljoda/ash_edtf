@@ -49,7 +49,8 @@ defmodule AshEdtf.MixProject do
     [
       licenses: ["MIT"],
       links: %{"GitHub" => @source_url},
-      files: ~w(lib .formatter.exs mix.exs README.md LICENSE CHANGELOG.md documentation usage-rules.md usage-rules)
+      files:
+        ~w(lib .formatter.exs mix.exs README.md LICENSES REUSE.toml CHANGELOG.md documentation usage-rules.md usage-rules)
     ]
   end
 
@@ -66,12 +67,12 @@ defmodule AshEdtf.MixProject do
         "documentation/topics/postgres.md",
         "documentation/topics/forms.md",
         "CHANGELOG.md",
-        "LICENSE"
+        {"LICENSES/MIT.txt", title: "License"}
       ],
       groups_for_extras: [
         Tutorials: ~r'documentation/tutorials',
         Topics: ~r'documentation/topics',
-        "About AshEdtf": ["CHANGELOG.md", "LICENSE"]
+        "About AshEdtf": ["CHANGELOG.md", "LICENSES/MIT.txt"]
       ],
       groups_for_modules: [
         AshEdtf: [AshEdtf, AshEdtf.Type, AshEdtf.Value, AshEdtf.Day, AshEdtf.Bound],
