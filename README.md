@@ -1,3 +1,9 @@
+[![Elixir CI](https://github.com/weljoda/ash_edtf/actions/workflows/elixir.yml/badge.svg)](https://github.com/weljoda/ash_edtf/actions/workflows/elixir.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Hex version badge](https://img.shields.io/hexpm/v/ash_edtf.svg)](https://hex.pm/packages/ash_edtf)
+[![Hexdocs badge](https://img.shields.io/badge/docs-hexdocs-purple)](https://hexdocs.pm/ash_edtf)
+[![REUSE status](https://api.reuse.software/badge/github.com/weljoda/ash_edtf)](https://api.reuse.software/info/github.com/weljoda/ash_edtf)
+
 # AshEdtf
 
 [EDTF](https://www.loc.gov/standards/datetime/) (Extended Date/Time Format, ISO 8601-2) dates for
