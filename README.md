@@ -37,7 +37,8 @@ record.date
 - **Period search** with `edtf_overlaps(date, ^from, ^to)`, optionally backed by a GiST index.
 - **Calendar parts** for any year: `edtf_year/1`, `edtf_month/1`, `edtf_decade/1`, and
   `edtf_day/1` to compare bounds with ordinary date columns.
-- **Form helpers** for Phoenix: `AshEdtf.Phoenix.humanize_field/1` and a headless `<.edtf_input>`.
+- **Form helpers** for Phoenix: `AshEdtf.Phoenix.humanize_field/1` and a headless `<.edtf_input>`
+  with an optional label and help listing common EDTF patterns.
 
 ## Installation
 
