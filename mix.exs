@@ -116,7 +116,9 @@ defmodule AshEdtf.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:sobelow, ">= 0.0.0", only: [:dev, :test], runtime: false},
-      {:mix_audit, ">= 0.0.0", only: [:dev, :test], runtime: false}
+      {:mix_audit, ">= 0.0.0", only: [:dev, :test], runtime: false},
+      {:ex_check, "~> 0.17", only: [:dev, :test]},
+      {:git_ops, "~> 2.12", only: [:dev, :test]}
     ]
   end
 end

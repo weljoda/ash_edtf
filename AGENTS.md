@@ -11,7 +11,11 @@ bounds in a Postgres composite. Start with the moduledocs of `AshEdtf` and
   sandbox case live in `test/support`; their migrations in `priv/repo` are
   generated with `MIX_ENV=test mix ash.codegen <name>` — don't write them by
   hand.
-- Before committing: `mix format`, `mix credo --strict`, `mix test`.
+- Before committing: `mix check` (compiler, format, credo, dialyzer, tests,
+  docs, sobelow, audits), or at least `mix format`, `mix credo --strict`,
+  `mix test`.
+- Commit messages are conventional commits (`feat:`, `fix:`, `docs:`,
+  `chore:` …): `mix git_ops.release` builds `CHANGELOG.md` from them.
 - `config :ash, :custom_types` / `:custom_expressions` are compile-time
   config of `ash`. After changing them, run `mix deps.compile ash --force`
   (also with `MIX_ENV=test`).

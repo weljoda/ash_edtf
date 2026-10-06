@@ -1,5 +1,20 @@
 import Config
 
+# `mix git_ops.release` bumps the version in mix.exs and the install snippets,
+# writes CHANGELOG.md from conventional commits and tags the release.
+if Mix.env() == :dev do
+  config :git_ops,
+    mix_project: AshEdtf.MixProject,
+    changelog_file: "CHANGELOG.md",
+    repository_url: "https://github.com/weljoda/ash_edtf",
+    manage_mix_version?: true,
+    manage_readme_version: [
+      "README.md",
+      "documentation/tutorials/getting-started-with-ash-edtf.md"
+    ],
+    version_tag_prefix: "v"
+end
+
 # `custom_expressions` is compile-time config of `ash`; the test resources use
 # all of them.
 config :ash, :custom_expressions, [
